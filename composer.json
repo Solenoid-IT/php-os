@@ -1,0 +1,24 @@
+{
+    "name": "solenoid/os",
+    "description": "Operating System library",
+    "type": "library",
+    "keywords": ["os","process"],
+    "homepage": "https://github.com/Solenoid-IT/php-os",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pier Niccolò Giannelli",
+            "email": "pierniccologiannelli@gmail.com",
+            "homepage": "https://www.solenoid.it",
+            "role": "Full Stack Web Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Solenoid\\OS\\": "src"
+        }
+    }
+}

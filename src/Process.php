@@ -196,21 +196,32 @@ class Process
 
 
     # Returns [int|false]
-    public static function spawn (string $cmd, ?string $cwd = null, string $input = '')
+    public static function spawn (string $cmd, ?string $cwd = null, ?string $input = null)
     {
-        // (Creating a tmp-file)
-        $tmp_file_path = tempnam( '/tmp', time() . '_' );
+        // (Setting the value)
+        $input_stream = '';
 
-        if ( !$tmp_file_path )
-        {// (Unable to create the tmp-file)
-            // Returning the value
-            return false;
-        }
+        if ( $input )
+        {// Value found
+            // (Creating a tmp-file)
+            $tmp_file_path = tempnam( '/tmp', time() . '_' );
 
-        if ( file_put_contents( $tmp_file_path, $input ) === false )
-        {// (Unable to write to the file)
-            // Returning the value
-            return false;
+            if ( !$tmp_file_path )
+            {// (Unable to create the tmp-file)
+                // Returning the value
+                return false;
+            }
+
+            if ( file_put_contents( $tmp_file_path, $input ) === false )
+            {// (Unable to write to the file)
+                // Returning the value
+                return false;
+            }
+
+
+
+            // (Getting the value)
+            $input_stream = " < $tmp_file_path";
         }
 
 
@@ -227,7 +238,7 @@ class Process
 
 
         // (Getting the value)
-        $pid = (int) trim( shell_exec( "nohup $cmd < $tmp_file_path >/dev/null 2>&1 & echo $!" ) );
+        $pid = (int) trim( shell_exec( "nohup $cmd{$input_stream} >/dev/null 2>&1 & echo $!" ) );
 
 
 

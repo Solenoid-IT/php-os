@@ -13,11 +13,12 @@ class Process
 
 
     public string $cmd;
-    public string $cwd;
 
-    public string $input;
-    public string $output;
-    public string $error;
+    public ?string $cwd;
+
+    public ?string $input;
+    public ?string $output;
+    public ?string $error;
 
     public int $pid;
     public int $exitcode;
@@ -25,24 +26,42 @@ class Process
 
 
     # Returns [self]
-    public function __construct (string $cmd, ?string $cwd = null)
+    public function __construct (string $cmd)
     {
-        // (Getting the values)
+        // (Getting the value)
         $this->cmd = $cmd;
-        $this->cwd = $cwd;
 
+
+
+        // (Setting the value)
+        $this->cwd = null;
+    
 
 
         // (Setting the values)
-        $this->input  = '';
-        $this->output = '';
-        $this->error  = '';
+        $this->input  = null;
+        $this->output = null;
+        $this->error  = null;
     }
 
 
 
     # Returns [self]
-    public function set_input (string $input)
+    public function set_cwd (?string $cwd = null)
+    {
+        // (Getting the value)
+        $this->cwd = $cwd;
+
+
+
+        // Returning the value
+        return $this;
+    }
+
+
+
+    # Returns [self]
+    public function set_input (?string $input = null)
     {
         // (Getting the value)
         $this->input = $input;
@@ -58,6 +77,20 @@ class Process
     # Returns [self|false]
     public function start ()
     {
+        if ( $this->cwd )
+        {// Value found
+            // (Getting the value)
+            $cwd = getcwd();
+
+            if ( !chdir( $this->cwd ) )
+            {// (Unable to set the directory)
+                // Returning the value
+                return false;
+            }
+        }
+
+
+
         // (Setting the value)
         $input = '';
 
@@ -82,6 +115,17 @@ class Process
 
         // (Getting the value)
         $this->pid = trim( shell_exec( "nohup $this->cmd{$input} >/dev/null 2>&1 & echo $!" ) );
+
+
+
+        if ( $this->cwd )
+        {// Value found
+            if ( !chdir( $cwd ) )
+            {// (Unable to set the directory)
+                // Returning the value
+                return false;
+            }
+        }
 
 
 
@@ -187,7 +231,16 @@ class Process
     public static function spawn (string $cmd, ?string $cwd = null, ?string $input = null)
     {
         // Returning the value
-        return ( new Process( $cmd, $cwd ) )->set_input( $input ?? '' )->start();
+        return ( new Process( $cmd ) )->set_cwd( $cwd )->set_input( $input )->start();
+    }
+
+
+
+    # Returns [string]
+    public function __toString ()
+    {
+        // Returning the value
+        return $this->cmd;
     }
 }
 
